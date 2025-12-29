@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Home page on Jake Wright</title>
+    <link>https://jakewright.net/</link>
+    <description>Recent content in Home page on Jake Wright</description>
+    <generator>Hugo</generator>
+    <language>en-GB</language>
+    <lastBuildDate>Wed, 31 Mar 2021 00:00:00 +0000</lastBuildDate>
+    <atom:link href="https://jakewright.net/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Hello, World</title>
+      <link>https://jakewright.net/blog/hello-world/</link>
+      <pubDate>Wed, 31 Mar 2021 00:00:00 +0000</pubDate>
+      <guid>https://jakewright.net/blog/hello-world/</guid>
+      <description>&lt;p&gt;&#xA;I&amp;#39;m going to start blogging again. This is my first post.&lt;/p&gt;&#xA;&lt;p&gt;&#xA;Since this is a static site (i.e. no backend), there is currently no way to comment on posts. I am looking into solutions to this.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title></title>
+      <link>https://jakewright.net/projects/cidaz-city/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://jakewright.net/projects/cidaz-city/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title></title>
+      <link>https://jakewright.net/projects/community-pi/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://jakewright.net/projects/community-pi/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title></title>
+      <link>https://jakewright.net/projects/f453-computing/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://jakewright.net/projects/f453-computing/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title></title>
+      <link>https://jakewright.net/projects/overwrite/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://jakewright.net/projects/overwrite/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>About</title>
+      <link>https://jakewright.net/about/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://jakewright.net/about/</guid>
+      <description>&lt;p&gt;&#xA;My passion for web design began in 2004, not long after we got dial-up internet. I would use &lt;em&gt;Microsoft FrontPage&lt;/em&gt; to build websites for made-up companies. I spent the next few years learning HTML, CSS and JavaScript.&lt;/p&gt;&#xA;&lt;p&gt;&#xA;In 2006, I learnt how to program in C# from a bright orange book that I bought in &lt;em&gt;PC World&lt;/em&gt;. It guided me through building a web browser (which was really just an instance of &lt;em&gt;Internet Explorer&lt;/em&gt; with some custom buttons around the edge), among some other small programs. It was simple, and it was stupid, but it was exciting.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Downloads</title>
+      <link>https://jakewright.net/downloads/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://jakewright.net/downloads/</guid>
+      <description>&lt;ul&gt;&#xA;    &lt;li&gt;&lt;a href=&#34;https://jakewright.net/assets/dissertation_main.pdf&#34;&gt;Dissertation&lt;/a&gt;&lt;/li&gt;&#xA;&lt;/ul&gt;</description>
+    </item>
+    <item>
+      <title>Home Automation</title>
+      <link>https://jakewright.net/projects/home-automation/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://jakewright.net/projects/home-automation/</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>
