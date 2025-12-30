@@ -10,9 +10,9 @@
     <atom:link href="https://jakewright.net/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Hello, World</title>
-      <link>https://jakewright.net/blog/hello-world/</link>
+      <link>https://jakewright.net/posts/hello-world/</link>
       <pubDate>Wed, 31 Mar 2021 00:00:00 +0000</pubDate>
-      <guid>https://jakewright.net/blog/hello-world/</guid>
+      <guid>https://jakewright.net/posts/hello-world/</guid>
       <description>&lt;p&gt;&#xA;I&amp;#39;m going to start blogging again. This is my first post.&lt;/p&gt;&#xA;&lt;p&gt;&#xA;Since this is a static site (i.e. no backend), there is currently no way to comment on posts. I am looking into solutions to this.&lt;/p&gt;</description>
     </item>
     <item>
