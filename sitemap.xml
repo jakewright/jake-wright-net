@@ -2,10 +2,22 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://jakewright.net/posts/hello-world/</loc>
-    <lastmod>2021-03-31T00:00:00+00:00</lastmod>
+    <loc>https://jakewright.net/posts/browsing-synology-hyper-backup/</loc>
+    <lastmod>2026-01-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://jakewright.net/tags/homelab/</loc>
+    <lastmod>2026-01-01T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://jakewright.net/posts/</loc>
+    <lastmod>2026-01-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://jakewright.net/tags/synology/</loc>
+    <lastmod>2026-01-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://jakewright.net/tags/</loc>
+    <lastmod>2026-01-01T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://jakewright.net/posts/hello-world/</loc>
     <lastmod>2021-03-31T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://jakewright.net/</loc>
@@ -28,7 +40,5 @@
     <loc>https://jakewright.net/projects/home-automation/</loc>
   </url><url>
     <loc>https://jakewright.net/projects/</loc>
-  </url><url>
-    <loc>https://jakewright.net/tags/</loc>
   </url>
 </urlset>
