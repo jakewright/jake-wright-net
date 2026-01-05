@@ -1,0 +1,31 @@
+{{ define "main" }}
+<main>
+    <article>
+        <h1>{{ .Title }}</h1>
+        <b><time>{{ .Date.Format (default "2006-01-02 15:04:05" .Site.Params.dateFmt) }}</time></b>
+        {{ range .Params.tags }}
+        <a href="{{ "/tags/" | relLangURL }}{{ . | urlize }}">{{ . }}</a>
+        {{ end }}
+
+        <div>
+            {{ .Content }}
+        </div>
+    </article>
+
+    <script src="https://giscus.app/client.js"
+            data-repo="jakewright/jake-wright-net"
+            data-repo-id="R_kgDOQwj7uA"
+            data-category="Comments"
+            data-category-id="DIC_kwDOQwj7uM4C0W7s"
+            data-term="{{ .Path }}"
+            data-strict="1"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="top"
+            data-theme="light"
+            data-lang="en"
+            crossorigin="anonymous"
+            async>
+    </script>
+</main>
+{{ end }}

@@ -1,0 +1,64 @@
+---
+title: Browsing Synology Hyper Backup Data without Access to the NAS
+date: 2026-01-01
+slug: browsing-synology-hyper-backup
+tags: ["homelab", "Synology"]
+draft: false
+---
+
+A backup is only useful if you know how to access it in an emergency. Browsing a backup created with Synology Hyper Backup—without access to the NAS itself—is not as obvious as you might expect.
+
+** Browsing the backup via the NAS
+
+If you still have access to the NAS, you can browse backup data via the Hyper Backup UI itself.
+Clicking the small magnifying glass opens up the backup explorer.
+
+🔐 If you have client-side encryption enabled—which you should!—you will need to know the encryption key.
+
+{{< figure
+src="hyper-backup-ui.png"
+alt="Hyper Backup UI"
+width="300px"
+>}}
+
+** Browsing the backup /without/ access to the NAS
+
+There are various situations in which you will no longer have access to the NAS itself.
+In these cases, you can use the [[https://kb.synology.com/en-global/DSM/help/HyperBackupExplorer/hyperbackupexplorer][Synology Hyper Backup Explorer]].
+
+{{< figure
+src="hyper-backup-explorer.png"
+alt="Synology Hyper Backup Explorer"
+width="520px"
+>}}
+
+As you can see from the screenshot above, if your backup is not in Synology's C2, then the backup data must be available locally.
+You might be able to download your whole backup from the cloud storage provider.
+However, if you backup is large (mine is tens of terabytes!) then this might not be practical.
+
+*** Mounting cloud storage using Mountain Duck
+
+[[https://mountainduck.io][Mountain Duck]] lets you mount cloud storage as if it were a local drive in Finder (Mac OS) or File Explorer (Windows).
+
+The following cloud services are supported:
+
+- S3 Storage (any Amazon S3-compatible service, including Backblaze B2)
+- Google Drive
+- Dropbox
+- Microsoft Azure
+
+In my case, this lets me mount a Backblaze B2 bucket as a local volume.
+Synology Hyper Backup Explorer is happy to open the =.bkpi= file directly from the mounted volume.
+
+{{< figure
+src="mounted-volume.png"
+alt="Backblaze B2 mounted as a volume using Mountain Duck"
+width="520px"
+>}}
+
+** Conclusion
+
+It's slightly annoying that the Backup Explorer requires a local copy of the backup data.
+Using Mountain Duck is not official Synology advice, but it seems to work well for me.
+
+Please leave a comment below if you have any other suggestions!
