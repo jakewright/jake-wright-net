@@ -24,11 +24,12 @@ This website is comprised of two git repositories that both live on GitHub.
 
 ** 🔐 =jake-wright-net-src= (private)
 
-Contains the source code. It's private is so I can draft blog posts without them immediately becoming public.
+Contains the source code, plus other supporting files and documents.
+It's private is so I can draft blog posts without them immediately becoming public.
 
 ** 🌐 [[https://github.com/jakewright/jake-wright-net][=jake-wright-net=]] (public)
 
-Contains the generated HTML files, i.e. the output of =hugo build=.
+Contains a copy of the source code from the =main= branch of the private repository.
 Making this public lets anyone access the full history of changes to the site.
 This repo is also used for comments (see below).
 
@@ -68,7 +69,7 @@ width="100%"
 
 To deploy to production, I simply merge the branch to =main=. (If I want to skip the preview environment altogether, I can just push to =main= directly.)
 
-A GitHub Action runs the =hugo= build command and commits the output to the public =jake-wright-net= repository.
+A GitHub Action copies the source code over to the public =jake-wright-net= repository.
 The commit message from the private repo is used.
 If there are no changes, no commit is made.
 
@@ -87,52 +88,43 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v6
         with:
-          path: src
+          path: jake-wright-net-src
 
       - name: Checkout destination
         uses: actions/checkout@v6
         with:
           repository: jakewright/jake-wright-net
           token: ${{ secrets.GH_PAT }}
-          path: dst
-
-      - name: Setup Hugo
-        uses: peaceiris/actions-hugo@v3
-        with:
-          hugo-version: 'latest'
-          extended: true
-
-      - name: Build
-        run: hugo -s src -d ../dst
+          path: jake-wright-net
 
       - name: Push changes
         run: |
-          cd dst
+          find jake-wright-net -mindepth 1 -maxdepth 1 ! -name ".git" -exec rm -rf {} +
+          cp -a jake-wright-net-src/jake-wright-net/. jake-wright-net/
+          cd jake-wright-net
           git config user.name "Jake Wright"
           git config user.email "5333300+jakewright@users.noreply.github.com"
           if [[ -n $(git status -s) ]]; then
-            COMMIT_MESSAGE=$(git -C ../src log -1 --pretty=%s)
+            COMMIT_MESSAGE=$(git -C ../jake-wright-net-src log -1 --pretty=%s)
             git add .
             git commit -m "$COMMIT_MESSAGE"
             git push
           else
             echo "No changes to commit"
           fi
-
 #+END_SRC
 
 Note that a [[https://github.com/actions/checkout/blob/8e8c483db84b4bee98b60c0593521ed34d9990e8/README.md?plain=1#L274-L290][personal access token must be provided]] so that the GitHub Action can push to the other repository.
 
-Once the public repo is pushed to, the second Cloudflare Pages project deploys the site.
-No build is necessary this time as the GitHub Action has already built the site.
+Once the public repo is pushed to, the second Cloudflare Pages project builds and deploys the site.
 
 At this point, the changes will be live at [[https://jakewright.net][jakewright.net]].
 
 *** Why not GitHub Pages?
 
-For the production deployment, I could just use GitHub pages rather than the second Cloudflare Pages project.
-However, Cloudflare Pages provides some basic web analytics which GitHub Pages does not.
-Beyond that, there are no obvious advantages to either provider.
+I previously hosted the site using GitHub Pages.
+It worked well enough, but Cloudflare Pages provides some basic web analytics which GitHub Pages does not.
+Combined with the ability to do private preview deployments, it currently seems like the best option.
 
 * Comments
 
