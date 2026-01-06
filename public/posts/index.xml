@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Jake Wright</title>
+    <link>https://jakewright.net/posts/</link>
+    <description>Recent content in Posts on Jake Wright</description>
+    <generator>Hugo</generator>
+    <language>en-GB</language>
+    <atom:link href="https://jakewright.net/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>How does this website work?</title>
+      <link>https://jakewright.net/posts/how-does-this-site-work/</link>
+      <pubDate>Sun, 04 Jan 2026 00:00:00 +0000</pubDate>
+      <guid>https://jakewright.net/posts/how-does-this-site-work/</guid>
+      <description>&lt;div id=&#34;outline-container-headline-1&#34; class=&#34;outline-2&#34;&gt;&#xA;&lt;h2 id=&#34;headline-1&#34;&gt;&#xA;Hugo static site generator&#xA;&lt;/h2&gt;&#xA;&lt;div id=&#34;outline-text-headline-1&#34; class=&#34;outline-text-2&#34;&gt;&#xA;&lt;p&gt;&#xA;&lt;code class=&#34;verbatim&#34;&gt;jakewright.net&lt;/code&gt; is built using the static site generator, &lt;a href=&#34;https://gohugo.io/&#34;&gt;Hugo&lt;/a&gt;.&#xA;I find Hugo slightly difficult to work with, but it&amp;#39;s fast and it&amp;#39;s written in &lt;a href=&#34;https://go.dev&#34;&gt;Go&lt;/a&gt; which is a language I&amp;#39;m very familiar with. I use a custom theme.&lt;/p&gt;&#xA;&lt;p&gt;&#xA;When I&amp;#39;m making changes or writing a new blog post, I run the Hugo development server locally.&lt;/p&gt;&#xA;&lt;div class=&#34;src src-sh&#34;&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;hugo server --buildDrafts --buildFuture --disableFastRender&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&#xA;&lt;/div&gt;&#xA;&lt;/div&gt;&#xA;&lt;/div&gt;&#xA;&lt;div id=&#34;outline-container-headline-2&#34; class=&#34;outline-2&#34;&gt;&#xA;&lt;h2 id=&#34;headline-2&#34;&gt;&#xA;Git repositories&#xA;&lt;/h2&gt;&#xA;&lt;div id=&#34;outline-text-headline-2&#34; class=&#34;outline-text-2&#34;&gt;&#xA;&lt;p&gt;&#xA;This website is comprised of two git repositories that both live on GitHub.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Browsing Synology Hyper Backup Data without Access to the NAS</title>
+      <link>https://jakewright.net/posts/browsing-synology-hyper-backup/</link>
+      <pubDate>Thu, 01 Jan 2026 00:00:00 +0000</pubDate>
+      <guid>https://jakewright.net/posts/browsing-synology-hyper-backup/</guid>
+      <description>&lt;p&gt;&#xA;A backup is only useful if you know how to access it in an emergency. Browsing a backup created with Synology Hyper Backup—without access to the NAS itself—is not as obvious as you might expect.&lt;/p&gt;&#xA;&lt;div id=&#34;outline-container-headline-1&#34; class=&#34;outline-3&#34;&gt;&#xA;&lt;h3 id=&#34;headline-1&#34;&gt;&#xA;Browsing the backup via the NAS&#xA;&lt;/h3&gt;&#xA;&lt;div id=&#34;outline-text-headline-1&#34; class=&#34;outline-text-3&#34;&gt;&#xA;&lt;p&gt;&#xA;If you still have access to the NAS, you can browse backup data via the Hyper Backup UI itself.&#xA;Clicking the small magnifying glass opens up the backup explorer.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Hello, World</title>
+      <link>https://jakewright.net/posts/hello-world/</link>
+      <pubDate>Wed, 31 Mar 2021 00:00:00 +0000</pubDate>
+      <guid>https://jakewright.net/posts/hello-world/</guid>
+      <description>&lt;p&gt;&#xA;I&amp;#39;m going to start blogging again. This is my first post.&lt;/p&gt;&#xA;&lt;p&gt;&#xA;Since this is a static site (i.e. no backend), there is currently no way to comment on posts. I am looking into solutions to this.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Homelab on Jake Wright</title>
+    <link>https://jakewright.net/tags/homelab/</link>
+    <description>Recent content in Homelab on Jake Wright</description>
+    <generator>Hugo</generator>
+    <language>en-GB</language>
+    <lastBuildDate>Mon, 05 Jan 2026 21:37:10 +0000</lastBuildDate>
+    <atom:link href="https://jakewright.net/tags/homelab/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Browsing Synology Hyper Backup Data without Access to the NAS</title>
+      <link>https://jakewright.net/posts/browsing-synology-hyper-backup/</link>
+      <pubDate>Thu, 01 Jan 2026 00:00:00 +0000</pubDate>
+      <guid>https://jakewright.net/posts/browsing-synology-hyper-backup/</guid>
+      <description>&lt;p&gt;&#xA;A backup is only useful if you know how to access it in an emergency. Browsing a backup created with Synology Hyper Backup—without access to the NAS itself—is not as obvious as you might expect.&lt;/p&gt;&#xA;&lt;div id=&#34;outline-container-headline-1&#34; class=&#34;outline-3&#34;&gt;&#xA;&lt;h3 id=&#34;headline-1&#34;&gt;&#xA;Browsing the backup via the NAS&#xA;&lt;/h3&gt;&#xA;&lt;div id=&#34;outline-text-headline-1&#34; class=&#34;outline-text-3&#34;&gt;&#xA;&lt;p&gt;&#xA;If you still have access to the NAS, you can browse backup data via the Hyper Backup UI itself.&#xA;Clicking the small magnifying glass opens up the backup explorer.&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

@@ -3,3 +3,4 @@ languageCode = 'en-GB'
 title = "Jake Wright"
 theme = "jake"
 cleanDestinationDir = true
+enableGitInfo = true
