@@ -69,12 +69,12 @@ width="100%"
 
 To deploy to production, I simply merge the branch to =main=. (If I want to skip the preview environment altogether, I can just push to =main= directly.)
 
-A GitHub Action copies the source code over to the public =jake-wright-net= repository.
+A GitHub Action copies the source code over to the public =jake-wright-net= repository and runs the Hugo build command.
 The commit message from the private repo is used.
 If there are no changes, no commit is made.
 
 #+BEGIN_SRC yaml
-name: Deploy
+name: Publish
 
 on:
   push:
@@ -97,14 +97,33 @@ jobs:
           token: ${{ secrets.GH_PAT }}
           path: jake-wright-net
 
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: 'latest'
+          extended: true
+
+      - name: Build
+        run: |
+          # Delete everything except the .git directory
+          find jake-wright-net -mindepth 1 -maxdepth 1 ! -name ".git" -exec rm -rf {} +
+
+          # Copy all source files
+          cp -a jake-wright-net-src/src/. jake-wright-net/
+
+          # Build the site. This must be done in the destination directory so
+          # that hugo uses the correct git repository.
+          hugo -s jake-wright-net
+
       - name: Push changes
         run: |
-          find jake-wright-net -mindepth 1 -maxdepth 1 ! -name ".git" -exec rm -rf {} +
-          cp -a jake-wright-net-src/jake-wright-net/. jake-wright-net/
           cd jake-wright-net
           git config user.name "Jake Wright"
           git config user.email "5333300+jakewright@users.noreply.github.com"
+
+          # If there are any changes according to git
           if [[ -n $(git status -s) ]]; then
+            # Use the commit message from the jake-wright-net-src
             COMMIT_MESSAGE=$(git -C ../jake-wright-net-src log -1 --pretty=%s)
             git add .
             git commit -m "$COMMIT_MESSAGE"
@@ -112,11 +131,12 @@ jobs:
           else
             echo "No changes to commit"
           fi
+
 #+END_SRC
 
 Note that a [[https://github.com/actions/checkout/blob/8e8c483db84b4bee98b60c0593521ed34d9990e8/README.md?plain=1#L274-L290][personal access token must be provided]] so that the GitHub Action can push to the other repository.
 
-Once the public repo is pushed to, the second Cloudflare Pages project builds and deploys the site.
+Once the public repo is pushed to, the second Cloudflare Pages project deploys the site.
 
 At this point, the changes will be live at [[https://jakewright.net][jakewright.net]].
 
