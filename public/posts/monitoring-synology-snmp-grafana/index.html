@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+	<title>Monitoring a Synology NAS with SNMP &amp; Grafana | Jake Wright</title>
+	
+	
+	<link rel="webmention" href="https://webmention.io/jakewright.net/webmention" />
+	<link rel="pingback" href="https://webmention.io/jakewright.net/xmlrpc" />
+	
+	
+	<link rel="stylesheet" href="https://jakewright.net/sass/main.css">
+	
+	
+</head>
+<body>
+	<header>
+    <h1><a href="https://jakewright.net/">Jake Wright</a></h1>
+
+    <nav>
+        <ul>
+            <li><a href="https://jakewright.net/about/">About</a></li>
+            <li><a href="https://jakewright.net/posts/">Posts</a></li>
+
+        </ul>
+    </nav>
+</header>
+
+	
+<main>
+    <article>
+        <h1>Monitoring a Synology NAS with SNMP &amp; Grafana</h1>
+        <b><time>2026-02-02</time></b>
+        
+
+        <div>
+            
+<div id="outline-container-headline-1" class="outline-2">
+<h2 id="headline-1">
+Introduction
+</h2>
+<div id="outline-text-headline-1" class="outline-text-2">
+<p>
+I figured it would be fun and mildly useful to have a Grafana dashboard for monitoring my Synology DS1821+ NAS.
+After spending a rainy weekend grappling with metrics, I have a dashboard that shows me realtime stats including CPU, memory, disks, volumes, temperatures and network activity.</p>
+<p>
+In this post I&#39;ll show you how you can set up your own dashboard.</p>
+<p>
+<figure><img src="/posts/monitoring-synology-snmp-grafana/overview.png" width="100%">
+</figure>
+</p>
+<p>
+<figure><img src="/posts/monitoring-synology-snmp-grafana/storage.png" width="100%">
+</figure>
+</p>
+<p>
+<figure><img src="/posts/monitoring-synology-snmp-grafana/network.png" width="100%">
+</figure>
+</p>
+<div id="outline-container-headline-2" class="outline-3">
+<h3 id="headline-2">
+System overview
+</h3>
+<div id="outline-text-headline-2" class="outline-text-3">
+<p>
+The plan is to monitor the NAS using SNMP (Simple Network Management Protocol).
+The data collected via SNMP will be ingested into Prometheus.
+Grafana will use Prometheus as a data source, allowing us to create dashboards.</p>
+<p>
+Despite the name, SNMP is anything but simple. 
+Fortunately, the <a href="https://github.com/prometheus/snmp_exporter">Prometheus SNMP Exporter</a> will do most of the work for us.</p>
+<div class="src src-goat">
+<pre tabindex="0"><code class="language-goat" data-lang="goat">+--------------+    +-----------------+     +---------------+    +-------------+
+|   Synology   |---&gt;|  SNMP Exporter  |----&gt;|  Prometheus   |---&gt;|   Grafana   |
++--------------+    +-----------------+     +---------------+    +-------------+</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-headline-3" class="outline-2">
+<h2 id="headline-3">
+Synology SNMP setup
+</h2>
+<div id="outline-text-headline-3" class="outline-text-2">
+<p>
+To enable the SNMP service, log in to DSM and navigate to <strong>Control Panel</strong> &gt; <strong>Terminal &amp; SNMP</strong> &gt; <strong>SNMP</strong>.</p>
+<ol>
+<li>Check <strong>Enable SNMP service</strong></li>
+<li>Check <strong>SNMPv3 service</strong></li>
+<li>Set a username, e.g. <code class="verbatim">snmp</code></li>
+<li>Choose protocol <code class="verbatim">SHA</code></li>
+<li>Set a password</li>
+<li>Check <strong>Enable SNMP privacy</strong></li>
+<li>Choose protocol <code class="verbatim">AES</code></li>
+<li>Set a password</li>
+<li>Set a <strong>Device Name</strong></li>
+</ol>
+<figure><img src="/posts/monitoring-synology-snmp-grafana/snmp-settings.png" width="400px">
+</figure>
+
+</div>
+</div>
+<div id="outline-container-headline-4" class="outline-2">
+<h2 id="headline-4">
+SNMP Exporter setup
+</h2>
+<div id="outline-text-headline-4" class="outline-text-2">
+<p>
+The SNMP Exporter runs in a Docker container. 
+The <a href="https://github.com/prometheus/snmp_exporter/blob/main/snmp.yml">default configuration file</a> (found at <code class="verbatim">/etc/snmp_exporter/snmp.yml</code> in the container) includes most common modules, including the Synology module.</p>
+<p>
+<strong>There is no need to download MIB files or generate your own config.</strong></p>
+<p>
+If you <em>do</em> find yourself needing to generate a config from MIB files, you can use the <a href="https://github.com/prometheus/snmp_exporter/tree/main/generator">generator</a> tool.
+I found it didn&#39;t run very well on Mac OS and involved some manual tweaking of the Makefile.</p>
+<p>
+We do, however, have to provide a config file with auth information. Set the passwords that you chose in DSM.</p>
+<div class="src src-yaml">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#ae81ff">// auth.yml</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">auths</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">synology</span>: <span style="color:#75715e"># ← This name is important later</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">community</span>: <span style="color:#ae81ff">public</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">security_level</span>: <span style="color:#ae81ff">authPriv</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">username</span>: <span style="color:#ae81ff">snmp</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">password</span>: <span style="color:#ae81ff">snmpv3-password-from-earlier</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">auth_protocol</span>: <span style="color:#ae81ff">SHA</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">priv_protocol</span>: <span style="color:#ae81ff">AES</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">priv_password</span>: <span style="color:#ae81ff">privacy-password-from-earlier</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">version</span>: <span style="color:#ae81ff">3</span></span></span></code></pre></div>
+</div>
+<p>
+Use a Docker volume to mount the file inside the container,
+and then set the <code class="verbatim">--config.file</code> arg.
+This can be specified twice: once for the default config, and once for our auth config.
+The files will be overlayed.</p>
+<div class="src src-yaml">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#ae81ff">// compose.yaml</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">services</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">snmp-exporter</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">image</span>: <span style="color:#ae81ff">prom/snmp-exporter</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">container_name</span>: <span style="color:#ae81ff">snmp-exporter</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">restart</span>: <span style="color:#ae81ff">unless-stopped</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">volumes</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#e6db74">&#39;/path/to/auth.yml:/etc/snmp_exporter/auth.yml&#39;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>        - <span style="color:#e6db74">&#39;9116:9116&#39;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">command</span>: [<span style="color:#e6db74">&#34;--config.file=/etc/snmp_exporter/snmp.yml&#34;</span>, <span style="color:#e6db74">&#34;--config.file=/etc/snmp_exporter/auth.yml&#34;</span>]</span></span></code></pre></div>
+</div>
+<div id="outline-container-headline-5" class="outline-3">
+<h3 id="headline-5">
+Testing snmp-exporter
+</h3>
+<div id="outline-text-headline-5" class="outline-text-3">
+<p>
+You can test this right away. Substitute in the IP address of the Docker host and the IP of the NAS, respectively (they will be the same if you&#39;re using Container Manager on the NAS itself).</p>
+<div class="src src-sh">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>curl <span style="color:#e6db74">&#39;http://docker_host_ip:9116/snmp?target=synology_nas_ip&amp;auth=synology&amp;module=synology&#39;</span></span></span></code></pre></div>
+</div>
+<p>
+With some luck, you&#39;ll see it spit out a bunch of metrics.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-headline-6" class="outline-2">
+<h2 id="headline-6">
+Grafana and Prometheus setup
+</h2>
+<div id="outline-text-headline-6" class="outline-text-2">
+<p>
+If you don&#39;t already have Grafana and Prometheus, you may want to run these as Docker containers too.</p>
+<p>
+Refer to official the official docs for up-to-date information.</p>
+<ul>
+<li><a href="https://grafana.com/docs/grafana/latest/setup-grafana/installation/docker/">https://grafana.com/docs/grafana/latest/setup-grafana/installation/docker/</a></li>
+<li><a href="https://prometheus.io/docs/prometheus/latest/installation/#using-docker">https://prometheus.io/docs/prometheus/latest/installation/#using-docker</a></li>
+</ul>
+<div class="src src-yaml">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#ae81ff">// compose.yaml</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">services</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">grafana</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">image</span>: <span style="color:#ae81ff">grafana/grafana</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">container_name</span>: <span style="color:#ae81ff">grafana</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">restart</span>: <span style="color:#ae81ff">unless-stopped</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>            - <span style="color:#e6db74">&#39;3000:3000&#39;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">volumes</span>:
+</span></span><span style="display:flex;"><span>            - <span style="color:#e6db74">&#39;/path/to/data:/var/lib/grafana&#39;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">prometheus</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">image</span>: <span style="color:#ae81ff">prom/prometheus</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">container_name</span>: <span style="color:#ae81ff">prometheus</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">restart</span>: <span style="color:#ae81ff">unless-stopped</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>            - <span style="color:#e6db74">&#39;9090:9090&#39;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">volumes</span>:
+</span></span><span style="display:flex;"><span>            - <span style="color:#e6db74">&#39;/path/to/config:/etc/prometheus&#39;</span>
+</span></span><span style="display:flex;"><span>            - <span style="color:#e6db74">&#39;/path/to/data:/prometheus&#39;</span></span></span></code></pre></div>
+</div>
+<div id="outline-container-headline-7" class="outline-3">
+<h3 id="headline-7">
+Grafana data source
+</h3>
+<div id="outline-text-headline-7" class="outline-text-3">
+<p>
+In Grafana, add a Prometheus data source using the URL <code class="verbatim">http://prometheus:9090</code>.</p>
+</div>
+</div>
+<div id="outline-container-headline-8" class="outline-3">
+<h3 id="headline-8">
+Prometheus config
+</h3>
+<div id="outline-text-headline-8" class="outline-text-3">
+<p>
+Add a new scrape configuration to Prometheus.
+Below is an example <code class="verbatim">prometheus.yml</code> file.</p>
+<p>
+If using the Docker Compose file above, this would be placed inside <code class="verbatim">/path/to/config/</code>.</p>
+<p>
+At a minimum, include the <code class="verbatim">synology</code> module under <code class="verbatim">params.module</code>.
+For reasons I cannot explain, not all of the documented Synology MIBs get scraped.
+Some are missing, e.g. <code class="verbatim">cpuUtilization</code>. We can get similar metrics from other modules, though.
+Synology supports a few natively, including <code class="verbatim">if_mib</code>, <code class="verbatim">ucd_system_stats</code>, <code class="verbatim">ucd_memory</code>, and <code class="verbatim">system</code>.
+Again, refer to the <a href="https://github.com/prometheus/snmp_exporter/blob/main/snmp.yml">snmp-exporter default snmp.yml</a> file for a list of all available modules and associated metrics.</p>
+<div class="src src-yaml">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#ae81ff">// prometheus.yml</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">global</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">scrape_interval</span>: <span style="color:#ae81ff">1m</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">scrape_configs</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#f92672">job_name</span>: <span style="color:#e6db74">&#39;synology&#39;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">scrape_interval</span>: <span style="color:#ae81ff">1m</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">static_configs</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">targets</span>: [<span style="color:#e6db74">&#39;192.168.1.XX&#39;</span>] <span style="color:#75715e"># ← The IP address of your Synology NAS</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">labels</span>:
+</span></span><span style="display:flex;"><span>          <span style="color:#75715e"># Add custom labels to all metrics scraped by this job, e.g.:</span>
+</span></span><span style="display:flex;"><span>          <span style="color:#f92672">device</span>: <span style="color:#e6db74">&#39;ds1821&#39;</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">metrics_path</span>: <span style="color:#ae81ff">/snmp</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">params</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># Add the synology module, along with any standard modules that DSM supports</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">module</span>: [<span style="color:#ae81ff">synology, if_mib, ucd_system_stats, ucd_memory, system]</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#75715e"># This is the name of the auth block from auth.yml above.</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">auth</span>: [<span style="color:#ae81ff">synology]</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">relabel_configs</span>:
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">source_labels</span>: [<span style="color:#ae81ff">__address__]</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">target_label</span>: <span style="color:#ae81ff">__param_target</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">source_labels</span>: [<span style="color:#ae81ff">__param_target]</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">target_label</span>: <span style="color:#ae81ff">instance</span>
+</span></span><span style="display:flex;"><span>      - <span style="color:#f92672">target_label</span>: <span style="color:#ae81ff">__address__</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># This must be the host:port of SNMP Exporter.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Assuming it&#39;s running on the same Docker network as </span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># Prometheus, we can access it via its container name.</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#f92672">replacement</span>: <span style="color:#ae81ff">snmp-exporter:9116</span></span></span></code></pre></div>
+</div>
+<p>
+Restart Promtheus, and it should start scraping metrics from the NAS. Visit the Prometheus web interface (port 9090) and navigate to <strong>Status</strong> &gt; <strong>Target health</strong> to check.</p>
+<p>
+And with that, you&#39;re ready to build some dashboards!</p>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-headline-9" class="outline-2">
+<h2 id="headline-9">
+Dashboard example
+</h2>
+<div id="outline-text-headline-9" class="outline-text-2">
+<p>
+Below are some examples of simple visualisations you can create. 
+If you don&#39;t want to build the whole dashboard from scratch, check out some pre-made <a href="https://grafana.com/grafana/dashboards/18643-synology-snmp/">community dashboards</a>.</p>
+<p>
+<figure><img src="/posts/monitoring-synology-snmp-grafana/gauges.png" width="300px">
+</figure>
+</p>
+<p>
+Create a couple of <strong>Gauge</strong> visualsations and use the following queries:</p>
+<div class="src src-promql">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-promql" data-lang="promql"><span style="display:flex;"><span>ssCpuSystem{job<span style="color:#f92672">=</span>&#34;<span style="color:#e6db74">synology</span>&#34;} <span style="color:#f92672">+</span> ssCpuUser{job<span style="color:#f92672">=</span>&#34;<span style="color:#e6db74">synology</span>&#34;}</span></span></code></pre></div>
+</div>
+<div class="src src-promql">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-promql" data-lang="promql"><span style="display:flex;"><span><span style="color:#f92672">(</span>memTotalReal{job<span style="color:#f92672">=</span>&#34;<span style="color:#e6db74">synology</span>&#34;} <span style="color:#f92672">-</span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">(</span>
+</span></span><span style="display:flex;"><span>        memCached{job<span style="color:#f92672">=</span>&#34;<span style="color:#e6db74">synology</span>&#34;} <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>        memBuffer{job<span style="color:#f92672">=</span>&#34;<span style="color:#e6db74">synology</span>&#34;} <span style="color:#f92672">+</span>
+</span></span><span style="display:flex;"><span>        memAvailReal{job<span style="color:#f92672">=</span>&#34;<span style="color:#e6db74">synology</span>&#34;}
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">)</span> <span style="color:#f92672">/</span> memTotalReal{job<span style="color:#f92672">=</span>&#34;<span style="color:#e6db74">synology</span>&#34;}</span></span></code></pre></div>
+</div>
+</div>
+</div>
+
+        </div>
+
+        <footer>
+            <span style="display: flex; align-items: center; gap: 5px; font-size: 0.9em;">
+                <svg width="18px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M7 8L3 11.6923L7 16M17 8L21 11.6923L17 16M14 4L10 20" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+                <a href="https://github.com/jakewright/jake-wright-net/blob/main/content/posts/2026-02-02-monitoring-synology-grafana/index.org?plain=1">View this post's source on GitHub</a>
+            </span>
+        </footer>
+
+        <section id="comments">
+            <script src="https://giscus.app/client.js"
+                    data-repo="jakewright/jake-wright-net"
+                    data-repo-id="R_kgDOQwj7uA"
+                    data-category="Comments"
+                    data-category-id="DIC_kwDOQwj7uM4C0W7s"
+                    data-term="/posts/2026-02-02-monitoring-synology-grafana"
+                    data-strict="1"
+                    data-reactions-enabled="1"
+                    data-emit-metadata="0"
+                    data-input-position="top"
+                    data-theme="light"
+                    data-lang="en"
+                    crossorigin="anonymous"
+                    async>
+            </script>
+        </section>
+
+    </article>
+</main>
+
+	<footer>
+    <ul>
+        <li><a href="https://youtube.com/jaketvee" rel="me">YouTube</a></li>
+        <li><a href="https://bsky.app/profile/jakewright.net" rel="me">Bluesky</a></li>
+        <li><a href="https://x.com/jakewrightuk" rel="me">X</a></li>
+        <li><a href="https://www.instagram.com/jakewrightuk/" rel="me">Instagram</a></li>
+        <li><a href="https://github.com/jakewright" rel="me">GitHub</a></li>
+    </ul>
+    <p>&copy; 1994–2026 Jake Wright
+</footer>
+
+</body>
+</html>
