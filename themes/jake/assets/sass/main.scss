@@ -15,6 +15,7 @@ $palette-blue: #0000FF;
 $palette-dodger-blue: #118BF5;
 $palette-pacific-blue: #02A9C1;
 $palette-malachite: #24D91C;
+$palette-lemon: #FBEE13;
 
 $color-bg-panel: $palette-alabaster;
 
@@ -47,6 +48,14 @@ $color-link: $palette-blue;
   @include text-gradient($palette-pacific-blue, $palette-malachite);
 }
 
+/* Fonts */
+
+$font-family-body:  system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+"Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
+"Droid Sans", "Helvetica Neue", sans-serif;
+
+$font-family-title: $font-family-body;
+
 /* Global styles */
 
 html {
@@ -57,8 +66,12 @@ body {
   max-width: 800px;
   margin: 20px auto;
   padding: 0 10px;
-  font: 1.6rem/1.5 Helvetica, Arial, sans-serif;
+  font-size: 1.6rem;
+  line-height: 1.5;
+  font-family: $font-family-body;
   color: $color-text-body;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums; // Make numbers align
 }
 
 @media (max-width: 800px) {
@@ -74,6 +87,7 @@ p {
 h1, h2, h3, h4, h5, h6 {
   color: $color-text-heading;
   line-height: 1.3;
+  font-weight: 600;
 }
 
 h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
@@ -81,27 +95,25 @@ h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
   text-decoration: none;
 }
 
-h2 {
-  font-weight: normal;
+h1 {
   font-size: 3.2rem;
+  font-weight: 400;
 }
 
-@media (max-width: 45rem) {
-  h2 {
-    font-size: 2.4rem;
-  }
+h2 {
+  font-size: 2.8rem;
 }
 
 h3 {
   font-size: 2.4rem;
-  font-weight: 600;
-  margin: 3rem 0 1.2rem;
+}
 
-  .subtitle {
-    @extend .blue;
-    font-weight: 400;
-    text-transform: lowercase;
-  }
+h4 {
+  font-size: 2.0rem;
+}
+
+h5, h6 {
+  font-size: 1.6rem; // Equal to body size
 }
 
 /* Header */
@@ -111,11 +123,20 @@ header {
   flex-wrap: wrap;
   align-items: center;
 
-  h1 {
-    font-weight: normal;
-    font-size: 2.8rem;
+  .site-title {
+    font-family: $font-family-title;
+    font-size: 1.8rem;
+    font-weight: 600;
+    line-height: 1em;
+    text-transform: uppercase;
     margin: 0;
-    padding: 0;
+    padding: 5px 10px;
+    background-color: $palette-lemon;
+
+    a {
+      text-decoration: none;
+      color: $color-text-heading;
+    }
   }
 
   nav {
@@ -146,13 +167,13 @@ header {
 
   // When the screen is too small to show
   // Jake Wright and the nav side-by-side
-  @media (max-width: 45rem) {
+  @media (max-width: 25rem) {
     nav {
       width: 100%; // Making the flex item full width forces it onto a new row
     }
 
     ul {
-      margin-top: 1rem;
+      margin-top: 2rem;
 
       li {
         padding-left: 0;
@@ -170,7 +191,6 @@ header {
 
 .headline {
   text-align: center;
-  letter-spacing: 1px;
   margin: 3rem 0;
 
   .space {
@@ -181,6 +201,7 @@ header {
 @media (max-width: 70rem) {
   .headline {
     text-align: left;
+    margin: 2rem 0;
 
     br {
       display: none;
@@ -279,3 +300,28 @@ ul.link-list {
 //figure {
 //  margin: auto
 //}
+
+#homepage {
+  h1 {
+    font-family: $font-family-title;
+  }
+
+  @media (max-width: 45rem) {
+    h1 {
+      font-size: 2.8rem;
+    }
+  }
+
+  h3 {
+    font-size: 2.4rem;
+    font-weight: 600;
+    margin: 3rem 0 1.2rem;
+
+    .subtitle {
+      @extend .blue;
+      font-weight: 400;
+      text-transform: lowercase;
+    }
+  }
+
+}

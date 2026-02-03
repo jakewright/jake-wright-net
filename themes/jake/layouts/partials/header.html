@@ -1,10 +1,12 @@
 <header>
-    <h1><a href="{{ .Site.BaseURL }}">{{ .Site.Title }}</a></h1>
+    <div class="site-title">
+        <a href="{{ .Site.BaseURL }}">{{ .Site.Title }}</a>
+    </div>
 
     <nav>
         <ul>
-            <li><a href="{{ ref . "about" }}">About</a></li>
-            <li><a href="{{ ref . "posts" }}">Posts</a></li>
+            <li><a href="{{ relref . "about" }}">About</a></li>
+            <li><a href="{{ relref . "posts" }}">Posts</a></li>
 <!--            <li><a href="/projects">Projects</a></li>-->
         </ul>
     </nav>

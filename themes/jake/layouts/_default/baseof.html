@@ -12,7 +12,7 @@
 	<link rel="pingback" href="https://webmention.io/jakewright.net/xmlrpc" />
 	{{ $sass := resources.Get "sass/main.scss" }}
 	{{ $style := $sass | css.Sass }}
-	<link rel="stylesheet" href="{{ $style.Permalink }}">
+	<link rel="stylesheet" href="{{ $style.RelPermalink }}?rnd={{ now.Unix }}">
 	{{ range .Site.Params.customCSS -}}
 		<link rel="stylesheet" href="{{ . | relURL }}?rnd={{ now.Unix }}">
 	{{- end }}
